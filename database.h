@@ -8,6 +8,7 @@
 #include <map>
 #include <iostream>
 #include "user.h"
+#include <conio.h>
 
 class User;
 
@@ -17,7 +18,9 @@ private:
 
     std::size_t createId(const std::string& email) const;
 
-    bool find(const std::string& email) const;
+    bool find_bool(const std::string& email) const;
+
+    User* getUser(const std::string& email) const;
 
 public:
     Data(){
@@ -33,6 +36,7 @@ public:
     void printUserInfo(const std::string& email) const;
 
     void registration();
+    void login() const;
 
 };
 
@@ -64,7 +68,7 @@ void Data::registration() {
         }
         nEmail = temp + "@sth.com";
         std::cout << nEmail << std::endl;
-        if(find(nEmail)){
+        if(find_bool(nEmail)){
             std::cout << "Sorry, this email address has already been taken, chose another one, please\n";
         }else{
             flag = false;
@@ -87,6 +91,56 @@ void Data::registration() {
     addUser(nEmail, nPass, nName, nSurName);
 }
 
+void Data::login() const {
+    std::string loginEmail;
+    bool flag = true;
+    int statusint = 0;
+    while(flag){
+        if(statusint >= 1){
+            std::cout << "Press Escape to exit or Enter to cont.\n";
+            char status;
+            status = getch();
+            if(status == 27)
+                return;
+        }
+        std::cout << "Email: ";
+        
+        std::getline(std::cin, loginEmail);
+        std::cout << std::endl;
+    
+        if(!find_bool(loginEmail)){
+            std::cout << "Invalid email, try again.\n";
+            statusint++;
+        }
+        else{
+            flag = false;
+        }
+    }
+    std::string loginPassword;
+    flag = true;
+    statusint = 0;
+    while(flag){
+        if(statusint >= 1){
+            std::cout << "Press Escape to exit or Enter to cont.\n";
+            char status;
+            status = getch();
+            if(status == 27)
+                return;
+        }
+        std::cout << "Password: ";
+        std::getline(std::cin, loginPassword);
+        std::cout << std::endl;
+    
+        if(getUser(loginEmail)->getPass() != loginPassword){
+            std::cout << "Invalid password, try again.\n";
+            statusint++;
+        }
+        else{
+            flag = false;
+        }
+    }
+}
+
 std::size_t Data::createId(const std::string &email) const {
     std::hash<std::string> sHash;
 
@@ -95,7 +149,7 @@ std::size_t Data::createId(const std::string &email) const {
     return id;
 }
 
-bool Data::find(const std::string& email) const {
+bool Data::find_bool(const std::string& email) const {
     for(auto it = users->begin(); it != users->end(); ++it){
         if(it->first == email){
             return true;
@@ -105,8 +159,17 @@ bool Data::find(const std::string& email) const {
 
 }
 
+User* Data::getUser(const std::string& email) const{
+    if(!find_bool(email)){
+        std::cout << "There is no such a User, with a given email" << std::endl;
+        return nullptr;
+    }
+    auto it = users->find(email);
+    return it->second;
+}
+
 void Data::printUserInfo(const std::string& email) const {
-    if(!find(email)){
+    if(!find_bool(email)){
         std::cout << "There is no such a User, with a given email" << std::endl;
         return;
     }

@@ -42,6 +42,11 @@ public:
         return email;
     }
 
+    std::string getPass() const{
+        return password;
+    }
+    
+
     friend std::ostream& operator<<(std::ostream&, const User&);
 
 };
